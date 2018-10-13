@@ -50,7 +50,11 @@ var level = [1,1,1,1,1,1,0,0,0,1,1,0,0,0,1,1,0,0,0,1,1,1,1,1,1];
 var levelWidth = 5;
 var keysDown = {};
 
+
 var tileSize = 32;
+var tileset = new Image();
+tileset.src = "sd.png";
+
 var mousex;
 var mousey;
 
@@ -107,15 +111,22 @@ var GameLoop = function(){
         
         
         ctx.fillStyle = level[i+j*levelWidth] === 0 ? "#5af15a" : "#a0a0a0";
-        
+        if(level[i+j*levelWidth] === 3) {
+          ctx.fillStyle = "#f00";
+        }
       if(Coordinates.inWorldBounds(mp) && level[mp.x+mp.y*levelWidth] !=='undefined') {
       //  level[Math.floor(mp.x)+Math.floor(mp.y)*levelWidth]=2;
       } 
-        if(Coordinates.inWorldBounds(mp) && Math.floor(mp.x)+Math.floor(mp.y)*levelWidth===i+j*levelWidth) {
-          ctx.fillStyle = "#fff";
-        }
+      //drawTile(p,tileSize,tileSize);
+      var pIso = Coordinates.toIso(p);
+     // ctx.drawImage(tileset,Viewport.isoPos().x+pIso.x-tileSize,Viewport.isoPos().y+pIso.y);
+      ctx.drawImage(tileset,level[i+j*levelWidth]*64,0, tileSize*2,
+      tileSize, Viewport.isoPos().x+pIso.x-tileSize,Viewport.isoPos().y+pIso.y, tileSize*2, tileSize);
+      
+      if(Coordinates.inWorldBounds(mp) && Math.floor(mp.x)+Math.floor(mp.y)*levelWidth===i+j*levelWidth) {
+        ctx.fillStyle = "rgba(255,255,255, 0.5)";
         drawTile(p,tileSize,tileSize);
-        
+      }
       }
     }
     
@@ -132,13 +143,13 @@ var clearBlack = function() {
 var drawTile = function(p,width,height) {
   ctx.beginPath();
   var newP = Coordinates.toIso(p);
-  ctx.moveTo(Viewport.isoPos().x + newP.x,Viewport.isoPos().y + newP.y);
+  ctx.moveTo(Math.round(Viewport.isoPos().x + newP.x),Math.round(Viewport.isoPos().y + newP.y));
   var p2 = Coordinates.toIso(new Point(p.x+width, p.y));
-  ctx.lineTo(Viewport.isoPos().x + p2.x,Viewport.isoPos().y + p2.y);
+  ctx.lineTo(Math.round(Viewport.isoPos().x + p2.x),Math.round(Viewport.isoPos().y + p2.y));
   var p3 = Coordinates.toIso(new Point(p.x+width, p.y+height));
-  ctx.lineTo(Viewport.isoPos().x + p3.x, Viewport.isoPos().y + p3.y);
+  ctx.lineTo(Math.round(Viewport.isoPos().x + p3.x), Math.round(Viewport.isoPos().y + p3.y));
   var p4 = Coordinates.toIso(new Point(p.x, p.y+height));
-  ctx.lineTo(Viewport.isoPos().x + p4.x, Viewport.isoPos().y + p4.y);
+  ctx.lineTo(Math.round(Viewport.isoPos().x + p4.x), Math.round(Viewport.isoPos().y + p4.y));
   ctx.closePath();
   ctx.fill();
 }
