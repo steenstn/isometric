@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+<meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+  <title>Isometric Game</title>
+  <style>
+    body {
+      margin:0px;
+      padding:0px;
+      text-align:center;
+      background-color: #000;
+    }
+
+    canvas{
+      outline:0;
+      border:1px solid #666;
+  	  image-rendering: optimizeSpeed;             /* Older versions of FF          */
+  	  image-rendering: -moz-crisp-edges;          /* FF 6.0+                       */
+  	  image-rendering: -webkit-optimize-contrast; /* Safari                        */
+  	  image-rendering: -o-crisp-edges;            /* OS X & Windows Opera (12.02+) */
+  	  image-rendering: pixelated;                 /* Awesome future-browsers       */
+  	  -ms-interpolation-mode: nearest-neighbor;   /* IE                            */
+  	  transform:scale(2);
+  	  transform-origin: top;
+      margin-left: auto;
+      margin-right: auto;
+      margin-top:40px;
+    }
+  </style>
+</head>
+<body>
+
+<script src="js/Point.js" type="text/javascript"></script>  
+<script src="js/Viewport.js" type="text/javascript"></script>
+
+
+<canvas id='c'></canvas>
+<script>
+
+var gLoop,
+c = document.getElementById('c'),
+ctx = c.getContext('2d');
+
+c.width = Viewport.width;
+c.height = Viewport.height;
+var level = [1,1,1,1,1,1,0,0,0,1,1,0,0,0,1,1,0,0,0,1,1,1,1,1,1];
+var levelWidth = 5;
+var keysDown = {};
+
+var tileSize = 32;
+var mousex;
+var mousey;
+
+addEventListener("keydown", function (e) {
+	keysDown[e.keyCode] = true;
+}, false);
+
+addEventListener("keyup", function (e) {
+	delete keysDown[e.keyCode];
+}, false);
+
+addEventListener('mousedown', function (e) {
+
+mouseIsDown=1;
+
+}, false);
+addEventListener('mouseup', function (e) {
+mouseIsDown=0;
+mouseClick=0;
+}, false);
+
+function getMousePos(canvas, evt){
+    // get canvas position
+    var obj = canvas;
+    var top = 0;
+    var left = 0;
+    while (obj && obj.tagName != 'BODY') {
+        top += obj.offsetTop;
+        left += obj.offsetLeft;
+        obj = obj.offsetParent;
+    }
+
+    // return relative mouse position
+    mousex = (evt.clientX - left + window.pageXOffset)/2 + 160;
+    mousey = (evt.clientY - top + window.pageYOffset)/2;
+
+}
+var canvas = document.getElementById('c');
+canvas.addEventListener('mousemove', function(evt){
+        getMousePos(canvas, evt);
+
+}, false);
+
+
+var GameLoop = function(){
+    clearBlack();
+    checkKeys();
+    
+    for(var i = 0; i < 5; i++) {
+      for(var j = 0; j < 5; j++) {
+
+        var p = new Point(i*tileSize, j*tileSize);
+        
+        
+        ctx.fillStyle = level[i+j*levelWidth] === 0 ? "#5af15a" : "#a0a0a0";
+        if(level[i+j*levelWidth]===2) {
+          ctx.fillStyle = "#fff";
+        }
+        drawTile(p,tileSize,tileSize);
+        
+      }
+    }
+    
+    var mp = getTileCoordinates(isoTo2D(new Point(-Viewport.isoPos().x+mousex, -Viewport.isoPos().y+mousey)), tileSize);
+    
+    if(mp.x >= 0 && mp.y >= 0 && mp.y < levelWidth && mp.x < levelWidth && level[mp.x+mp.y*levelWidth] !=='undefined') {
+
+      level[Math.floor(mp.x)+Math.floor(mp.y)*levelWidth]=2;
+    }
+    ctx.fillStyle = "#f00";
+    ctx.fillText(level[mp.x+mp.y*levelWidth], mousex, mousey);
+    ctx.fillStyle = "#fff";
+    ctx.fillText("Mouse " + mousex + " " + mousey, 10, 10);
+    ctx.fillText(getTileCoordinates(new Point(mousex, mousey), tileSize).x + " - " + getTileCoordinates(new Point(mousex, mousey), tileSize).y, 10, 30);
+    gLoop = setTimeout(GameLoop, 20);
+    return;
+}
+var clearBlack = function() {
+    ctx.fillStyle = "#000";
+    ctx.fillRect(0,0,640,300);
+}
+
+var drawTile = function(p,width,height) {
+  ctx.beginPath();
+  var newP = twoDToIso(p);
+  ctx.moveTo(Viewport.isoPos().x + newP.x,Viewport.isoPos().y + newP.y);
+  var p2 = twoDToIso(new Point(p.x+width, p.y));
+  ctx.lineTo(Viewport.isoPos().x + p2.x,Viewport.isoPos().y + p2.y);
+  var p3 = twoDToIso(new Point(p.x+width, p.y+height));
+  ctx.lineTo(Viewport.isoPos().x + p3.x, Viewport.isoPos().y + p3.y);
+  var p4 = twoDToIso(new Point(p.x, p.y+height));
+  ctx.lineTo(Viewport.isoPos().x + p4.x, Viewport.isoPos().y + p4.y);
+  ctx.closePath();
+  ctx.fill();
+}
+
+function isoTo2D(pt){
+  
+  var tempPt = new Point(0, 0);
+  tempPt.x = (2 * pt.y + pt.x) / 2;
+  tempPt.y = (2 * pt.y - pt.x) / 2;
+  return(tempPt);
+}
+
+function twoDToIso(pt){
+  
+  var tempPt= new Point(0,0);
+  tempPt.x = pt.x - pt.y;
+  tempPt.y = (pt.x + pt.y) / 2;
+  return(tempPt);
+}
+
+function getTileCoordinates(pt, tileHeight){
+  
+  var tempPt = new Point(0, 0);
+  tempPt.x = Math.floor(pt.x / tileHeight);
+  tempPt.y = Math.floor(pt.y / tileHeight);
+  return(tempPt);
+}
+
+var checkKeys = function () {
+//  console.log(keysDown);
+	if (38 in keysDown) { // Player holding up
+    Viewport.pos.y+=5;
+    Viewport.pos.x+=5;
+	}
+	else if (40 in keysDown) { // Player holding down
+    Viewport.pos.y-=5;
+    Viewport.pos.x-=5;
+    
+	}
+	if (37 in keysDown) { // Player holding left
+    Viewport.pos.x+=5;
+    Viewport.pos.y-=5;
+	}
+	else if (39 in keysDown) { // Player holding right
+    Viewport.pos.x-=5;
+    Viewport.pos.y+=5;
+	}
+
+	//console.log(keysDown);
+}
+
+GameLoop();
+</script>
+</body>
+</html>
