@@ -9,7 +9,7 @@ var Viewport = (function () {
         tempPt.y = (Viewport.pos.x + Viewport.pos.y) / 2;
         return (tempPt);
     };
-    Viewport.pos = new Point(0, 0);
+    Viewport.pos = new Point(200, -30);
     Viewport.oldPos = new Point(0, 0);
     Viewport.width = 640;
     Viewport.height = 300;

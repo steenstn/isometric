@@ -19,4 +19,7 @@ class Coordinates {
         tempPt.y = Math.floor(pt.y / tileHeight);
         return(tempPt);
     }
+    static inWorldBounds(pt : Point) : boolean {
+        return pt.x >=0 && pt.x < 5 && pt.y >= 0 && pt.y < 5;
+    }
 }

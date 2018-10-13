@@ -19,5 +19,8 @@ var Coordinates = (function () {
         tempPt.y = Math.floor(pt.y / tileHeight);
         return (tempPt);
     };
+    Coordinates.inWorldBounds = function (pt) {
+        return pt.x >= 0 && pt.x < 5 && pt.y >= 0 && pt.y < 5;
+    };
     return Coordinates;
 }());

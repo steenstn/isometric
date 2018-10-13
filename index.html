@@ -98,6 +98,7 @@ canvas.addEventListener('mousemove', function(evt){
 var GameLoop = function(){
     clearBlack();
     checkKeys();
+    var mp = Coordinates.getTileCoordinates(Coordinates.to2d(new Point(-Viewport.isoPos().x+mousex, -Viewport.isoPos().y+mousey)), tileSize);
     
     for(var i = 0; i < 5; i++) {
       for(var j = 0; j < 5; j++) {
@@ -106,7 +107,11 @@ var GameLoop = function(){
         
         
         ctx.fillStyle = level[i+j*levelWidth] === 0 ? "#5af15a" : "#a0a0a0";
-        if(level[i+j*levelWidth]===2) {
+        
+      if(Coordinates.inWorldBounds(mp) && level[mp.x+mp.y*levelWidth] !=='undefined') {
+      //  level[Math.floor(mp.x)+Math.floor(mp.y)*levelWidth]=2;
+      } 
+        if(Coordinates.inWorldBounds(mp) && Math.floor(mp.x)+Math.floor(mp.y)*levelWidth===i+j*levelWidth) {
           ctx.fillStyle = "#fff";
         }
         drawTile(p,tileSize,tileSize);
@@ -114,16 +119,8 @@ var GameLoop = function(){
       }
     }
     
-    var mp = Coordinates.getTileCoordinates(Coordinates.to2d(new Point(-Viewport.isoPos().x+mousex, -Viewport.isoPos().y+mousey)), tileSize);
     
-    if(mp.x >= 0 && mp.y >= 0 && mp.y < levelWidth && mp.x < levelWidth && level[mp.x+mp.y*levelWidth] !=='undefined') {
 
-      level[Math.floor(mp.x)+Math.floor(mp.y)*levelWidth]=2;
-    }
-    ctx.fillStyle = "#f00";
-    ctx.fillText(level[mp.x+mp.y*levelWidth], mousex, mousey);
-    ctx.fillStyle = "#fff";
-    ctx.fillText("Mouse " + mousex + " " + mousey, 10, 10);
     gLoop = setTimeout(GameLoop, 20);
     return;
 }
