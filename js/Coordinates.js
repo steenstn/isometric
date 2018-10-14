@@ -20,7 +20,7 @@ var Coordinates = (function () {
         return (tempPt);
     };
     Coordinates.inWorldBounds = function (pt) {
-        return pt.x >= 0 && pt.x < WorldConstants.levelWidth && pt.y >= 0 && pt.y < WorldConstants.levelWidth;
+        return pt.x >= 0 && pt.x < Level.levelWidth && pt.y >= 0 && pt.y < Level.levelWidth;
     };
     return Coordinates;
 }());
