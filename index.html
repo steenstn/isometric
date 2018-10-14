@@ -55,9 +55,6 @@ c.height = Viewport.height;
 var keysDown = {};
 
 var player = new Player();
-var tileSize = 32;
-var tileset = new Image();
-tileset.src = "sd.png";
 Level.loadTileset();
 
 addEventListener("keydown", function (e) {
@@ -83,7 +80,7 @@ function getMousePos(canvas, evt){
     var obj = canvas;
     var top = 0;
     var left = 0;
-    while (obj && obj.tagName != 'BODY') {
+    while (obj && obj.tagName != 'body') {
         top += obj.offsetTop;
         left += obj.offsetLeft;
         obj = obj.offsetParent;
@@ -94,6 +91,7 @@ function getMousePos(canvas, evt){
     Mouse.y = (evt.clientY - top + window.pageYOffset)/2;
 
 }
+
 var canvas = document.getElementById('c');
 canvas.addEventListener('mousemove', function(evt){
         getMousePos(canvas, evt);
@@ -107,7 +105,7 @@ var GameLoop = function(){
     }
     clearBlack();
     checkKeys();
-    var mp = Coordinates.getTileCoordinates(Coordinates.to2d(new Point(-Viewport.isoPos().x+Mouse.x, -Viewport.isoPos().y+Mouse.y)), tileSize);
+    var mp = Coordinates.getTileCoordinates(Coordinates.to2d(new Point(-Viewport.isoPos().x+Mouse.x, -Viewport.isoPos().y+Mouse.y)), Level.tileSize);
     if(Mouse.click===1) {
       var isoMouse = Coordinates.to2d(new Point(Mouse.x,Mouse.y));
       player.setGoalPos(new Point(-Viewport.pos.x + isoMouse.x,  -Viewport.pos.y + isoMouse.y));
@@ -117,7 +115,7 @@ var GameLoop = function(){
     
     if(Coordinates.inWorldBounds(mp)) {
         ctx.fillStyle = "rgba(255,255,255, 0.5)";
-        drawTile(new Point(mp.x*Level.tileSize, mp.y*Level.tileSize),tileSize,tileSize);
+        drawTile(new Point(mp.x*Level.tileSize, mp.y*Level.tileSize), Level.tileSize, Level.tileSize);
     }
     
     player.render(ctx);
