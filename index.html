@@ -58,6 +58,7 @@ var player = new Player();
 var tileSize = 32;
 var tileset = new Image();
 tileset.src = "sd.png";
+Level.loadTileset();
 
 addEventListener("keydown", function (e) {
 	keysDown[e.keyCode] = true;
@@ -112,30 +113,11 @@ var GameLoop = function(){
       player.setGoalPos(new Point(-Viewport.pos.x + isoMouse.x,  -Viewport.pos.y + isoMouse.y));
     }
     player.moveTowardsGoal();
-    for(var i = 0; i < Level.levelWidth; i++) {
-      for(var j = 0; j < Level.levelWidth; j++) {
-
-        var p = new Point(i*tileSize, j*tileSize);
-        
-        
-        ctx.fillStyle = Level.currentLevel[i+j*Level.levelWidth] === 0 ? "#5af15a" : "#a0a0a0";
-        if(Level.currentLevel[i+j*Level.levelWidth] === 3) {
-          ctx.fillStyle = "#f00";
-        }
-      if(Coordinates.inWorldBounds(mp) && Level.currentLevel[mp.x+mp.y*Level.levelWidth] !=='undefined') {
-      //  level[Math.floor(mp.x)+Math.floor(mp.y)*levelWidth]=2;
-      } 
-      //drawTile(p,tileSize,tileSize);
-      var pIso = Coordinates.toIso(p);
-     // ctx.drawImage(tileset,Viewport.isoPos().x+pIso.x-tileSize,Viewport.isoPos().y+pIso.y);
-      ctx.drawImage(tileset,Level.currentLevel[i+j*Level.levelWidth]*64,0, tileSize*2,
-      tileSize, Viewport.isoPos().x+pIso.x-tileSize,Viewport.isoPos().y+pIso.y, tileSize*2, tileSize);
-      
-      if(Coordinates.inWorldBounds(mp) && Math.floor(mp.x)+Math.floor(mp.y)*Level.levelWidth===i+j*Level.levelWidth) {
+    Level.render(ctx);
+    
+    if(Coordinates.inWorldBounds(mp)) {
         ctx.fillStyle = "rgba(255,255,255, 0.5)";
-        drawTile(p,tileSize,tileSize);
-      }
-      }
+        drawTile(new Point(mp.x*Level.tileSize, mp.y*Level.tileSize),tileSize,tileSize);
     }
     
     player.render(ctx);
