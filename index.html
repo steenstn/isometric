@@ -33,8 +33,13 @@
 <body>
 
 <script src="js/Point.js" type="text/javascript"></script>
+<script src="js/WorldConstants.js" type="text/javascript"></script>
 <script src="js/Coordinates.js" type="text/javascript"></script>
 <script src="js/Viewport.js" type="text/javascript"></script>
+
+<script src="js/Mouse.js" type="text/javascript"></script>
+
+<script src="js/Player.js" type="text/javascript"></script>
 
 
 <canvas id='c'></canvas>
@@ -46,17 +51,14 @@ ctx = c.getContext('2d');
 
 c.width = Viewport.width;
 c.height = Viewport.height;
-var level = [1,1,1,1,1,1,0,0,0,1,1,0,0,0,1,1,0,0,0,1,1,1,1,1,1];
-var levelWidth = 5;
+var level = [1,1,1,1,1,1,1,1,1,1,1,0,0,0,0,1,0,0,0,1,1,0,0,1,0,0,1,1,0,1,1,0,0,1,0,0,0,0,0,1,1,0,0,0,0,0,0,0,0,1,1,0,0,0,0,0,0,0,0,1,1,0,0,0,0,0,0,0,0,1,1,0,0,0,0,0,0,0,0,1,1,0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,1,1,1,1];
+var levelWidth = 10;
 var keysDown = {};
 
-
+var player = new Player();
 var tileSize = 32;
 var tileset = new Image();
 tileset.src = "sd.png";
-
-var mousex;
-var mousey;
 
 addEventListener("keydown", function (e) {
 	keysDown[e.keyCode] = true;
@@ -67,13 +69,13 @@ addEventListener("keyup", function (e) {
 }, false);
 
 addEventListener('mousedown', function (e) {
-
-mouseIsDown=1;
-
+  
+  Mouse.isDown=true;
 }, false);
+
 addEventListener('mouseup', function (e) {
-mouseIsDown=0;
-mouseClick=0;
+  Mouse.isDown=false;
+  Mouse.click = 0;
 }, false);
 
 function getMousePos(canvas, evt){
@@ -88,8 +90,8 @@ function getMousePos(canvas, evt){
     }
 
     // return relative mouse position
-    mousex = (evt.clientX - left + window.pageXOffset)/2 + 160;
-    mousey = (evt.clientY - top + window.pageYOffset)/2;
+    Mouse.x = (evt.clientX - left + window.pageXOffset)/2 + 160;
+    Mouse.y = (evt.clientY - top + window.pageYOffset)/2;
 
 }
 var canvas = document.getElementById('c');
@@ -100,12 +102,19 @@ canvas.addEventListener('mousemove', function(evt){
 
 
 var GameLoop = function(){
+    if(Mouse.isDown) {
+      Mouse.click++;
+    }
     clearBlack();
     checkKeys();
-    var mp = Coordinates.getTileCoordinates(Coordinates.to2d(new Point(-Viewport.isoPos().x+mousex, -Viewport.isoPos().y+mousey)), tileSize);
-    
-    for(var i = 0; i < 5; i++) {
-      for(var j = 0; j < 5; j++) {
+    var mp = Coordinates.getTileCoordinates(Coordinates.to2d(new Point(-Viewport.isoPos().x+Mouse.x, -Viewport.isoPos().y+Mouse.y)), tileSize);
+    if(Mouse.click===1) {
+      var isoMouse = Coordinates.to2d(new Point(Mouse.x,Mouse.y));
+      player.setGoalPos(new Point(-Viewport.pos.x + isoMouse.x,  -Viewport.pos.y + isoMouse.y));
+    }
+    player.moveTowardsGoal();
+    for(var i = 0; i < levelWidth; i++) {
+      for(var j = 0; j < levelWidth; j++) {
 
         var p = new Point(i*tileSize, j*tileSize);
         
@@ -130,7 +139,7 @@ var GameLoop = function(){
       }
     }
     
-    
+    player.render(ctx);
 
     gLoop = setTimeout(GameLoop, 20);
     return;
