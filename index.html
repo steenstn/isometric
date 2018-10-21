@@ -154,7 +154,8 @@ var GameLoop = function(){
     if(WorldConstants.debugOutput) {
       for (var value of cameFrom.keys()) {
         if(value && cameFrom.get(value)) { 
-          
+        
+          ctx.fillStyle = "rgba(155,155,255, 0.5)";
         drawTile(new Point(cameFrom.get(value).x*Level.tileSize, cameFrom.get(value).y*Level.tileSize), Level.tileSize, Level.tileSize);
       }
       }
@@ -162,7 +163,7 @@ var GameLoop = function(){
 
     if(WorldConstants.debugOutput) {
         for(var i = 0; i < path.length;i++) {
-          ctx.fillStyle = "#700";
+          ctx.fillStyle = "rgba(100,255,100, 0.8)";
           drawTile(new Point(path[i].x*Level.tileSize, path[i].y*Level.tileSize), Level.tileSize, Level.tileSize);
       }
     }
