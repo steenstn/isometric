@@ -147,12 +147,9 @@ var GameLoop = function(){
       
     }
     player.moveTowardsGoal();
-    Level.render(ctx);
+    Level.render(ctx, player, mp);
     
-    if(Coordinates.inWorldBounds(mp)) {
-        ctx.fillStyle = "rgba(255,255,255, 0.5)";
-        drawTile(new Point(mp.x*Level.tileSize, mp.y*Level.tileSize), Level.tileSize, Level.tileSize);
-    }
+    
     
     if(WorldConstants.debugOutput) {
       for (var value of cameFrom.keys()) {
@@ -169,7 +166,7 @@ var GameLoop = function(){
           drawTile(new Point(path[i].x*Level.tileSize, path[i].y*Level.tileSize), Level.tileSize, Level.tileSize);
       }
     }
-    player.render(ctx);
+    //player.render(ctx);
     gLoop = setTimeout(GameLoop, 20);
     return;
 }
