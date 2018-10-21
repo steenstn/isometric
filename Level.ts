@@ -20,18 +20,15 @@ class Level {
       
               var p = new Point(i*Level.tileSize, j*Level.tileSize);
               
-              context.fillStyle = Level.currentLevel[i+j*Level.levelWidth] === 0 ? "#5af15a" : "#a0a0a0";
-              if(Level.currentLevel[i+j*Level.levelWidth] === 3) {
-                context.fillStyle = "#f00";
-              }
+             
             
             var pIso = Coordinates.toIso(p);
             context.drawImage(Level.tileset,Level.currentLevel[i+j*Level.levelWidth]*64,0, Level.tileSize*2,
                 Level.tileSize, Viewport.isoPos().x+pIso.x-Level.tileSize,Viewport.isoPos().y+pIso.y, Level.tileSize*2, Level.tileSize);
-                if(mp.x === i && mp.y === j) {
-                    context.fillStyle = "rgba(255,255,255, 0.5)";
-                    Level.drawTile(context,new Point(mp.x*Level.tileSize, mp.y*Level.tileSize), Level.tileSize, Level.tileSize);
-                  }  
+            if(mp.x === i && mp.y === j) {
+                context.fillStyle = "rgba(255,255,255, 0.5)";
+                Level.drawTile(context,new Point(mp.x*Level.tileSize, mp.y*Level.tileSize), Level.tileSize, Level.tileSize);
+            }  
             if(Level.currentLevel[i+j*Level.levelWidth] === 1) {
                 context.drawImage(Level.buildings,64,0, Level.tileSize*4,
                     Level.tileSize*4, Viewport.isoPos().x+pIso.x-Level.tileSize,Viewport.isoPos().y+pIso.y-Level.tileSize, Level.tileSize*4, Level.tileSize*4);
