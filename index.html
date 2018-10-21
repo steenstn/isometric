@@ -181,26 +181,50 @@ var getNeighbours = function(p, cameFrom) {
   var result = [];
     var n = new Point(p.x+1,p.y);
     if(isValidWalkingTile(n)) {
-    result.push(n);
+      result.push(n);
     }
     n = new Point(p.x-1,p.y);
     if(isValidWalkingTile(n)) {
-    result.push(n);
+      result.push(n);
     }
     n = new Point(p.x,p.y+1);
     if(isValidWalkingTile(n)) {
-    result.push(n);
+      result.push(n);
     }
     n = new Point(p.x,p.y-1);
     if(isValidWalkingTile(n)) {
-    result.push(n);
+      result.push(n);
     }
-    
+    // Diagonals
+    n = new Point(p.x-1,p.y-1);
+    if(isValidWalkingTile(n) && isValidDiagonal(n)) {
+      result.push(n);
+    }
+    n = new Point(p.x+1,p.y-1);
+    if(isValidWalkingTile(n) && isValidDiagonal(n)) {
+      result.push(n);
+    }
+    n = new Point(p.x-1,p.y+1);
+    if(isValidWalkingTile(n) && isValidDiagonal(n)) {
+      result.push(n);
+    }
+    n = new Point(p.x-1,p.y-1);
+    if(isValidWalkingTile(n) && isValidDiagonal(n)) {
+      result.push(n);
+    }
   return result;
 }
 
 var isValidWalkingTile = function(p) {
   return !cameFrom.get(p.x+p.y*Level.levelWidth) && Coordinates.inWorldBounds(p) && Level.currentLevel[p.x+p.y*Level.levelWidth]===0;
+}
+
+var isValidDiagonal = function(p) {
+  return Level.currentLevel[p.x+1+p.y*Level.levelWidth]===0 &&
+    Level.currentLevel[p.x-1+p.y*Level.levelWidth]===0 &&
+    Level.currentLevel[p.x+(p.y+1)*Level.levelWidth]===0 &&
+    Level.currentLevel[p.x+(p.y-1)*Level.levelWidth]===0;
+
 }
 
 var hasPoint = function(mapToSearch, p) {
