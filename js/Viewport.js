@@ -4,10 +4,7 @@ var Viewport = (function () {
         Viewport.oldPos = Viewport.pos;
     }
     Viewport.isoPos = function () {
-        var tempPt = new Point(0, 0);
-        tempPt.x = Viewport.pos.x - Viewport.pos.y;
-        tempPt.y = (Viewport.pos.x + Viewport.pos.y) / 2;
-        return (tempPt);
+        return Coordinates.toIso(this.pos);
     };
     Viewport.pos = new Point(200, -30);
     Viewport.oldPos = new Point(0, 0);

@@ -10,9 +10,6 @@ class Viewport {
   }
 
   static isoPos() : Point {
-    let tempPt= new Point(0,0);
-    tempPt.x = Viewport.pos.x - Viewport.pos.y;
-    tempPt.y = (Viewport.pos.x + Viewport.pos.y) / 2;
-    return(tempPt);
+    return Coordinates.toIso(this.pos);
   }
 }

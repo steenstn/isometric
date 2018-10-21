@@ -53,7 +53,7 @@ ctx = c.getContext('2d');
 c.width = Viewport.width;
 c.height = Viewport.height;
 var keysDown = {};
-
+var keyHeldDown = 0;
 var player = new Player();
 Level.loadTileset();
 
@@ -98,6 +98,10 @@ canvas.addEventListener('mousemove', function(evt){
 
 }, false);
 
+var frontier = [];
+var cameFrom = new Map();
+var goal = new Point(0,0);
+var path = [];
 
 var GameLoop = function(){
     if(Mouse.isDown) {
@@ -105,10 +109,42 @@ var GameLoop = function(){
     }
     clearBlack();
     checkKeys();
+   //   var frontier = [];
     var mp = Coordinates.getTileCoordinates(Coordinates.to2d(new Point(-Viewport.isoPos().x+Mouse.x, -Viewport.isoPos().y+Mouse.y)), Level.tileSize);
-    if(Mouse.click===1) {
+    if(Mouse.click===1 && Coordinates.inWorldBounds(mp)) {
       var isoMouse = Coordinates.to2d(new Point(Mouse.x,Mouse.y));
-      player.setGoalPos(new Point(-Viewport.pos.x + isoMouse.x,  -Viewport.pos.y + isoMouse.y));
+      goal = new Point(mp.x,mp.y);
+        
+      frontier = [];
+      cameFrom = new Map();
+      
+      frontier.push(player.getLevelCoordinates());      
+      cameFrom.set(player.getLevelCoordinates().x+player.getLevelCoordinates().y*Level.levelWidth, null);
+     
+      
+      while(frontier.length > 0) {
+        var current = frontier.shift();
+        if(current.x === mp.x && current.y === mp.y) {
+         
+          break;
+        }
+        var neighbours = getNeighbours(current, cameFrom);
+        for(var i=0; i < neighbours.length; i++) {
+          if(!hasPoint(cameFrom,neighbours[i])) {
+            frontier.push(neighbours[i]);
+            cameFrom.set(neighbours[i].x + neighbours[i].y*Level.levelWidth, current);
+          } 
+        }
+        
+      }
+      path = [];
+      var c = goal;
+      while(c && !(c.x === player.getLevelCoordinates().x && c.y === player.getLevelCoordinates().y)) {
+        path.push(c);
+        c = cameFrom.get(c.x + c.y*Level.levelWidth);
+      }
+      player.setPath(path);
+      
     }
     player.moveTowardsGoal();
     Level.render(ctx);
@@ -118,11 +154,64 @@ var GameLoop = function(){
         drawTile(new Point(mp.x*Level.tileSize, mp.y*Level.tileSize), Level.tileSize, Level.tileSize);
     }
     
-    player.render(ctx);
+    if(WorldConstants.debugOutput) {
+      for (var value of cameFrom.keys()) {
+        if(value && cameFrom.get(value)) { 
+          
+        drawTile(new Point(cameFrom.get(value).x*Level.tileSize, cameFrom.get(value).y*Level.tileSize), Level.tileSize, Level.tileSize);
+      }
+      }
+    }
 
+    if(WorldConstants.debugOutput) {
+        for(var i = 0; i < path.length;i++) {
+          ctx.fillStyle = "#700";
+          drawTile(new Point(path[i].x*Level.tileSize, path[i].y*Level.tileSize), Level.tileSize, Level.tileSize);
+      }
+    }
+    player.render(ctx);
     gLoop = setTimeout(GameLoop, 20);
     return;
 }
+
+var getNeighbours = function(p, cameFrom) {
+  if(!Coordinates.inWorldBounds(p)) {
+    return [];
+  }
+  var result = [];
+    var n = new Point(p.x+1,p.y);
+    if(isValidWalkingTile(n)) {
+    result.push(n);
+    }
+    n = new Point(p.x-1,p.y);
+    if(isValidWalkingTile(n)) {
+    result.push(n);
+    }
+    n = new Point(p.x,p.y+1);
+    if(isValidWalkingTile(n)) {
+    result.push(n);
+    }
+    n = new Point(p.x,p.y-1);
+    if(isValidWalkingTile(n)) {
+    result.push(n);
+    }
+    
+  return result;
+}
+
+var isValidWalkingTile = function(p) {
+  return !cameFrom.get(p.x+p.y*Level.levelWidth) && Coordinates.inWorldBounds(p) && Level.currentLevel[p.x+p.y*Level.levelWidth]===0;
+}
+
+var hasPoint = function(mapToSearch, p) {
+  for (var value of mapToSearch.values()) {
+    if(value && value.x === p.x && value.y === p.y) {
+      return true;
+    }
+  }
+  return false;
+}
+
 var clearBlack = function() {
     ctx.fillStyle = "#000";
     ctx.fillRect(0,0,640,300);
@@ -144,6 +233,14 @@ var drawTile = function(p,width,height) {
 
 var checkKeys = function () {
 //  console.log(keysDown);
+  if(79 in keysDown) {
+    keyHeldDown++
+    if(keyHeldDown === 1) {
+      WorldConstants.debugOutput = !WorldConstants.debugOutput;
+    }
+  } else {
+    keyHeldDown = 0;
+  }
 	if (38 in keysDown) { // Player holding up
     Viewport.pos.y+=5;
     Viewport.pos.x+=5;
