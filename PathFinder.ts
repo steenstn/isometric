@@ -1,5 +1,5 @@
 class Pathfinder {
-    privatefrontier : Array<any>;
+    private frontier : Array<any>;
     cameFrom : Map<any, any>;
     private level : Array<any>;
     private levelWidth : number;
