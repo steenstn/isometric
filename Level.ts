@@ -2,11 +2,18 @@ class Level {
     static currentLevel = [0,0,0,1,0,0,0,0,1,0,1,1,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,1,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,1,0,0,1,0,1,0,0,0,0,0,0,0,1,0,1,0,0,0,0,0,0,0,0,1,0,0,1,0,0,0,1,1,0,0,0,1,0,0,1,0,0,1,0,0,0,0,0,0,0,0,0,1,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,1,0,1,1,0,0,0,0,0,0,0,1,1,0,0,1,0,0,1,1,1,1,1,0,0,0,0,0,0,0,0,1,0,0,0,0,1,0,0,1,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,0,1,0,0,0,0,1,0,0,0,1,0,0,1,0,0,0,0,0,0,0,0,0,0,0,1,0,1,1,0,1,1,0,0,0,0,0,0,0,1,0,1,1,1,0,0,0,1,1,1,0,0,0,1,0,0,0,1,0,0,0,0,0,1,1,1,1,1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,0,1,0,0,0,0,0,0,1,1,0,0,1,1,0,0,0,1,0,0,0,0,0,1,0,0,0,0,0,1,1,0,1,0,0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0,0,0,0,1,1,0,0,1,0,0,1,0,1,0,1,0,0,0,0,1,1,0,0,1,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,1,1];
     static visibleArray = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
         
-    static levelWidth = 20;
+    static levelWidth = 100;
     static tileset : any;
     static tileSize = 32;
     static buildings : any;
     constructor() {}
+
+    static generateLevel() {
+        Level.currentLevel = [];
+        for(let i=0; i< this.levelWidth*this.levelWidth; i++) {
+            Level.currentLevel.push(Math.round(Math.random()*Math.random()));
+        }
+    }
 
     static loadTileset() {
         Level.tileset = new Image();
@@ -26,8 +33,9 @@ class Level {
         for(let j = 0; j < 150; j++) {
             let levelPos = new Point(ox, oy);
             let tilePos = Coordinates.getTileCoordinates(levelPos,Level.tileSize);
-            
-            let delta = 2
+            Level.visibleArray[Math.floor(tilePos.x)+Math.floor(tilePos.y)*Level.levelWidth] = 1;
+           
+            let delta = 0;
             if(this.checkPos(new Point(ox, oy)) ||
                this.checkPos(new Point(ox+delta, oy)) ||
                this.checkPos(new Point(ox-delta, oy)) ||
@@ -35,24 +43,40 @@ class Level {
                this.checkPos(new Point(ox, oy-delta)) ){
                 return;
             }
-            Level.visibleArray[Math.floor(tilePos.x)+Math.floor(tilePos.y)*Level.levelWidth] = 1;
-            
+             
             ox+=x;
             oy+=y;
         }
     }
     static render(context : any, player: Player, mp: Point) {
         
-        this.visibleArray = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
+        this.visibleArray = [].slice.apply(new Uint8Array(Level.levelWidth*Level.levelWidth));
         let x, y;
         for(let i = 0; i < 360; i++) {
             x = Math.cos(i*0.0175);
             y = Math.sin(i*0.0175);
             Level.doFov(player,x,y);
         }
-        for(var i = 0; i < Level.levelWidth; i++) {
-            for(var j = 0; j < Level.levelWidth; j++) {
-      
+        let startPos = Coordinates.getTileCoordinates(new Point(-Viewport.pos.x, -Viewport.pos.y-1.2*Viewport.height), Level.tileSize);
+        let startx = startPos.x;
+        let starty = startPos.y;
+        if(startx < 0) {startx = 0;}
+        if(starty < 0) {starty = 0;}
+
+        let endPos = Coordinates.getTileCoordinates(new Point(-Viewport.pos.x + 2*Viewport.width, -Viewport.pos.y+2*Viewport.height), Level.tileSize);
+        var endx=endPos.x;
+      	var endy=endPos.y;
+
+        if(endx>Level.levelWidth)
+            endx=Level.levelWidth;
+        if(endy>Level.levelWidth)
+            endy=Level.levelWidth;
+
+            
+        for(var i = startx; i < endx; i++) {
+            for(var j = starty; j < endy; j++) {
+                
+          
               var p = new Point(i*Level.tileSize, j*Level.tileSize);
               
              
@@ -64,17 +88,18 @@ class Level {
                 context.fillStyle = "rgba(255,255,255, 0.5)";
                 Level.drawTile(context,new Point(mp.x*Level.tileSize, mp.y*Level.tileSize), Level.tileSize, Level.tileSize);
             }  
-            if(Level.currentLevel[i+j*Level.levelWidth] === 1) {
-                context.drawImage(Level.buildings,64,0, Level.tileSize*4,
-                    Level.tileSize*4, Viewport.isoPos().x+pIso.x-Level.tileSize,Viewport.isoPos().y+pIso.y-Level.tileSize, Level.tileSize*4, Level.tileSize*4);
-        
-            }
+            
             context.fillStyle = "rgba(200,255,200, 0.5)";
-                
+               
             if(Level.visibleArray[i+j*Level.levelWidth]===1) {
                
                 Level.drawTile(context,new Point(i*Level.tileSize, j*Level.tileSize), Level.tileSize, Level.tileSize);
             
+            }
+            if(Level.currentLevel[i+j*Level.levelWidth] === 1) {
+                context.drawImage(Level.buildings,64,0, Level.tileSize*4,
+                    Level.tileSize*4, Viewport.isoPos().x+pIso.x-Level.tileSize,Viewport.isoPos().y+pIso.y-Level.tileSize, Level.tileSize*4, Level.tileSize*4);
+        
             }
                 if(player.getLevelCoordinates().x === i && player.getLevelCoordinates().y === j) {
                     player.render(context);

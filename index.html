@@ -59,6 +59,7 @@ var player = new Player();
 
 var enemy = new Enemy( new Point(300,250));
 Level.loadTileset();
+Level.generateLevel();
 
 addEventListener("keydown", function (e) {
 	keysDown[e.keyCode] = true;
