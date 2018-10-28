@@ -1,6 +1,3 @@
-var WorldConstants = (function () {
-    function WorldConstants() {
-    }
-    WorldConstants.debugOutput = false;
-    return WorldConstants;
-}());
+class WorldConstants {
+}
+WorldConstants.debugOutput = false;

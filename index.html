@@ -40,6 +40,8 @@
 
 <script src="js/Mouse.js" type="text/javascript"></script>
 
+<script src="js/PathFinder.js" type="text/javascript"></script>
+
 <script src="js/Player.js" type="text/javascript"></script>
 <script src="js/Enemy.js" type="text/javascript"></script>
 
@@ -107,46 +109,19 @@ var cameFrom = new Map();
 var goal = new Point(0,0);
 var path = [];
 
+var pathFinder = new Pathfinder(Level.currentLevel, Level.levelWidth);
+
 var GameLoop = function(){
     if(Mouse.isDown) {
       Mouse.click++;
     }
     clearBlack();
     checkKeys();
-   //   var frontier = [];
     var mp = Coordinates.getTileCoordinates(Coordinates.to2d(new Point(-Viewport.isoPos().x+Mouse.x, -Viewport.isoPos().y+Mouse.y)), Level.tileSize);
     if(Mouse.click===1 && Coordinates.inWorldBounds(mp)) {
-      var isoMouse = Coordinates.to2d(new Point(Mouse.x,Mouse.y));
-      goal = new Point(mp.x,mp.y);
-        
-      frontier = [];
-      cameFrom = new Map();
       
-      frontier.push(player.getLevelCoordinates());      
-      cameFrom.set(player.getLevelCoordinates().x+player.getLevelCoordinates().y*Level.levelWidth, null);
-     
-      
-      while(frontier.length > 0) {
-        var current = frontier.shift();
-        if(current.x === mp.x && current.y === mp.y) {
-         
-          break;
-        }
-        var neighbours = getNeighbours(current, cameFrom);
-        for(var i=0; i < neighbours.length; i++) {
-          if(!hasPoint(cameFrom,neighbours[i])) {
-            frontier.push(neighbours[i]);
-            cameFrom.set(neighbours[i].x + neighbours[i].y*Level.levelWidth, current);
-          } 
-        }
-        
-      }
-      path = [];
-      var c = goal;
-      while(c && !(c.x === player.getLevelCoordinates().x && c.y === player.getLevelCoordinates().y)) {
-        path.push(c);
-        c = cameFrom.get(c.x + c.y*Level.levelWidth);
-      }
+      path = pathFinder.findPath(player.getLevelCoordinates(), mp);
+      cameFrom = pathFinder.cameFrom;
       player.setPath(path);
       
     }
@@ -174,68 +149,6 @@ var GameLoop = function(){
     
     gLoop = setTimeout(GameLoop, 20);
     return;
-}
-
-var getNeighbours = function(p, cameFrom) {
-  if(!Coordinates.inWorldBounds(p)) {
-    return [];
-  }
-  var result = [];
-    var n = new Point(p.x+1,p.y);
-    if(isValidWalkingTile(n)) {
-      result.push(n);
-    }
-    n = new Point(p.x-1,p.y);
-    if(isValidWalkingTile(n)) {
-      result.push(n);
-    }
-    n = new Point(p.x,p.y+1);
-    if(isValidWalkingTile(n)) {
-      result.push(n);
-    }
-    n = new Point(p.x,p.y-1);
-    if(isValidWalkingTile(n)) {
-      result.push(n);
-    }
-    // Diagonals
-    n = new Point(p.x-1,p.y-1);
-    if(isValidWalkingTile(n) && isValidDiagonal(n)) {
-      result.push(n);
-    }
-    n = new Point(p.x+1,p.y-1);
-    if(isValidWalkingTile(n) && isValidDiagonal(n)) {
-      result.push(n);
-    }
-    n = new Point(p.x-1,p.y+1);
-    if(isValidWalkingTile(n) && isValidDiagonal(n)) {
-      result.push(n);
-    }
-    n = new Point(p.x-1,p.y-1);
-    if(isValidWalkingTile(n) && isValidDiagonal(n)) {
-      result.push(n);
-    }
-  return result;
-}
-
-var isValidWalkingTile = function(p) {
-  return !cameFrom.get(p.x+p.y*Level.levelWidth) && Coordinates.inWorldBounds(p) && Level.currentLevel[p.x+p.y*Level.levelWidth]===0;
-}
-
-var isValidDiagonal = function(p) {
-  return Level.currentLevel[p.x+1+p.y*Level.levelWidth]===0 &&
-    Level.currentLevel[p.x-1+p.y*Level.levelWidth]===0 &&
-    Level.currentLevel[p.x+(p.y+1)*Level.levelWidth]===0 &&
-    Level.currentLevel[p.x+(p.y-1)*Level.levelWidth]===0;
-
-}
-
-var hasPoint = function(mapToSearch, p) {
-  for (var value of mapToSearch.values()) {
-    if(value && value.x === p.x && value.y === p.y) {
-      return true;
-    }
-  }
-  return false;
 }
 
 var clearBlack = function() {

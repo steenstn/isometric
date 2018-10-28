@@ -1,23 +1,23 @@
-var Player = (function () {
-    function Player() {
+class Player {
+    constructor() {
         this.pos = new Point(100, 240);
         this.goalPos = new Point(this.pos.x, this.pos.y);
         this.oldPos = new Point(this.pos.x, this.pos.y);
     }
-    Player.prototype.setGoalPos = function (goal) {
+    setGoalPos(goal) {
         this.goalPos = goal;
-    };
-    Player.prototype.setPath = function (path) {
+    }
+    setPath(path) {
         this.path = path;
-    };
-    Player.prototype.getLevelCoordinates = function () {
+    }
+    getLevelCoordinates() {
         return Coordinates.getTileCoordinates(this.pos, Level.tileSize);
-    };
-    Player.prototype.getPos = function () {
-        var tempPos = new Point(this.pos.x, this.pos.y);
+    }
+    getPos() {
+        let tempPos = new Point(this.pos.x, this.pos.y);
         return tempPos;
-    };
-    Player.prototype.moveTowardsGoal = function () {
+    }
+    moveTowardsGoal() {
         if (!this.path) {
             return;
         }
@@ -42,21 +42,20 @@ var Player = (function () {
         else {
             this.pos.y--;
         }
-        var levelPos = Coordinates.getTileCoordinates(this.pos, 32);
+        let levelPos = Coordinates.getTileCoordinates(this.pos, 32);
         if (Level.currentLevel[levelPos.x + levelPos.y * Level.levelWidth] != 0) {
             this.pos = this.oldPos;
         }
-    };
-    Player.prototype.render = function (context) {
+    }
+    render(context) {
         context.fillStyle = "#11f";
-        var isoPos = Coordinates.toIso(this.pos);
+        let isoPos = Coordinates.toIso(this.pos);
         context.fillRect(Viewport.isoPos().x + isoPos.x - 5, Viewport.isoPos().y + isoPos.y - 16, 10, 16);
         if (WorldConstants.debugOutput) {
             context.fillStyle = "#f00";
-            var isoGoalPos = Coordinates.toIso(this.goalPos);
+            let isoGoalPos = Coordinates.toIso(this.goalPos);
             context.fillRect(Viewport.isoPos().x + isoGoalPos.x, Viewport.isoPos().y + isoGoalPos.y, 5, 5);
         }
-        var levelPos = Coordinates.getTileCoordinates(this.pos, 32);
-    };
-    return Player;
-}());
+        let levelPos = Coordinates.getTileCoordinates(this.pos, 32);
+    }
+}
