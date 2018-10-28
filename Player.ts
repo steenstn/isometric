@@ -21,6 +21,11 @@ class Player {
     getLevelCoordinates() : Point {
         return Coordinates.getTileCoordinates(this.pos, Level.tileSize);   
     }
+    
+    getPos() : Point {
+        let tempPos = new Point(this.pos.x, this.pos.y);
+        return tempPos;
+    }
 
     moveTowardsGoal() {
         if(!this.path) {

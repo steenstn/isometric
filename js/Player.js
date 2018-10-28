@@ -13,6 +13,10 @@ var Player = (function () {
     Player.prototype.getLevelCoordinates = function () {
         return Coordinates.getTileCoordinates(this.pos, Level.tileSize);
     };
+    Player.prototype.getPos = function () {
+        var tempPos = new Point(this.pos.x, this.pos.y);
+        return tempPos;
+    };
     Player.prototype.moveTowardsGoal = function () {
         if (!this.path) {
             return;
