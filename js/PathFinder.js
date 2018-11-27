@@ -4,19 +4,27 @@ class Pathfinder {
         this.levelWidth = levelWidth;
     }
     findPath(start, goal) {
-        this.frontier = [];
+        this.frontier = new TinyQueue([], function (a, b) {
+            return a.priority < b.priority ? -1 : a.priority > b.priority ? 1 : 0;
+        });
         this.cameFrom = new Map();
-        this.frontier.push(start);
+        this.costSoFar = new Map();
+        this.frontier.push({ point: start, priority: 0 });
+        console.log(this.frontier.peek());
         this.cameFrom.set(start.x + start.y * this.levelWidth, null);
+        this.costSoFar.set(start.x + start.y * this.levelWidth, 0);
         while (this.frontier.length > 0) {
-            let current = this.frontier.shift();
+            let current = this.frontier.pop().point;
             if (current.x === goal.x && current.y === goal.y) {
                 break;
             }
             let neighbours = this.getNeighbours(current);
             for (let i = 0; i < neighbours.length; i++) {
-                if (!this.hasPoint(neighbours[i])) {
-                    this.frontier.push(neighbours[i]);
+                var newCost = this.costSoFar.get(current.x + current.y * this.levelWidth) ? this.costSoFar.get(current.x + current.y * this.levelWidth) + 1 : 1;
+                if (!this.hasPoint(neighbours[i]) || newCost < this.costSoFar[neighbours[i].x + neighbours[i].y * this.levelWidth]) {
+                    this.costSoFar.set(neighbours[i].x + neighbours[i].y * this.levelWidth, newCost);
+                    var prio = newCost + this.heuristic(goal, neighbours[i]);
+                    this.frontier.push({ point: neighbours[i], priority: prio });
                     this.cameFrom.set(neighbours[i].x + neighbours[i].y * this.levelWidth, current);
                 }
             }
@@ -30,7 +38,7 @@ class Pathfinder {
         return path;
     }
     hasPoint(p) {
-        for (var value of this.cameFrom.values()) {
+        for (var value of this.costSoFar.values()) {
             if (value && value.x === p.x && value.y === p.y) {
                 return true;
             }
@@ -39,6 +47,9 @@ class Pathfinder {
     }
     inBounds(p) {
         return (p.x >= 0 && p.x < this.levelWidth && p.y >= 0 && p.y < this.levelWidth);
+    }
+    heuristic(a, b) {
+        return Math.abs(a.x - b.x) + Math.abs(a.y - b.y);
     }
     getNeighbours(p) {
         if (!this.inBounds(p)) {
