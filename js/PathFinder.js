@@ -10,7 +10,6 @@ class Pathfinder {
         this.cameFrom = new Map();
         this.costSoFar = new Map();
         this.frontier.push({ point: start, priority: 0 });
-        console.log(this.frontier.peek());
         this.cameFrom.set(start.x + start.y * this.levelWidth, null);
         this.costSoFar.set(start.x + start.y * this.levelWidth, 0);
         while (this.frontier.length > 0) {

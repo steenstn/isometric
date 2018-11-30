@@ -1,3 +1,5 @@
+// Taken from https://github.com/mourner/tinyqueue
+
 class TinyQueue {
     private data: any;
     private length: number;

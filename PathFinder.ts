@@ -1,3 +1,4 @@
+// Implemented with the help of https://www.redblobgames.com/pathfinding/a-star/introduction.html
 
 class Pathfinder {
     private frontier : any;
