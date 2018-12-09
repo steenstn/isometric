@@ -13,20 +13,20 @@ class Pathfinder {
         
     }
 
-    findPath(start: Point, goal: Point) : Array<any>{
+    findPath(start: Vector, goal: Vector) : Array<any>{
         this.frontier = new TinyQueue([], function (a: any, b:any) {
           return a.priority < b.priority ? -1 : a.priority > b.priority ? 1 : 0;
         });
         this.cameFrom = new Map();
         this.costSoFar = new Map();
 
-        this.frontier.push({point: start, priority: 0});
+        this.frontier.push({Vector: start, priority: 0});
         
         this.cameFrom.set(start.x + start.y*this.levelWidth, null);
         this.costSoFar.set(start.x + start.y*this.levelWidth, 0);
         
         while(this.frontier.length > 0) {
-            let current = this.frontier.pop().point;
+            let current = this.frontier.pop().Vector;
             if(current.x === goal.x && current.y === goal.y) {
                 break;
             }
@@ -35,11 +35,11 @@ class Pathfinder {
             for(let i = 0; i < neighbours.length; i++) {
                 var newCost = this.costSoFar.get(current.x + current.y*this.levelWidth) ? this.costSoFar.get(current.x + current.y*this.levelWidth) + 1 : 1;
                 
-                if(!this.hasPoint(neighbours[i]) || newCost < this.costSoFar[neighbours[i].x + neighbours[i].y*this.levelWidth]) {
+                if(!this.hasVector(neighbours[i]) || newCost < this.costSoFar[neighbours[i].x + neighbours[i].y*this.levelWidth]) {
                     this.costSoFar.set(neighbours[i].x + neighbours[i].y*this.levelWidth, newCost);
                     var prio = newCost + this.heuristic(goal, neighbours[i]);
                     
-                    this.frontier.push({point: neighbours[i], priority: prio });
+                    this.frontier.push({Vector: neighbours[i], priority: prio });
                     this.cameFrom.set(neighbours[i].x + neighbours[i].y*this.levelWidth, current);
                 }
             }
@@ -53,7 +53,7 @@ class Pathfinder {
         return path;
     }
 
-    private hasPoint(p : Point) {
+    private hasVector(p : Vector) {
         for (var value of this.costSoFar.values()) {
           if(value && value.x === p.x && value.y === p.y) {
             return true;
@@ -62,61 +62,61 @@ class Pathfinder {
         return false;
       }
 
-    private inBounds(p: Point) {
+    private inBounds(p: Vector) {
         return (p.x >=0 && p.x < this.levelWidth && p.y >= 0 && p.y < this.levelWidth);
     }
 
-    private heuristic(a: Point, b: Point) {
+    private heuristic(a: Vector, b: Vector) {
       return Math.abs(a.x - b.x) + Math.abs(a.y - b.y);
     }
 
-    private getNeighbours (p : Point) {
+    private getNeighbours (p : Vector) {
         if(!this.inBounds(p)) {
           return [];
         }
         var result = [];
-          var n = new Point(p.x+1,p.y);
+          var n = new Vector(p.x+1,p.y);
           if(this.isValidWalkingTile(n)) {
             result.push(n);
           }
-          n = new Point(p.x-1,p.y);
+          n = new Vector(p.x-1,p.y);
           if(this.isValidWalkingTile(n)) {
             result.push(n);
           }
-          n = new Point(p.x,p.y+1);
+          n = new Vector(p.x,p.y+1);
           if(this.isValidWalkingTile(n)) {
             result.push(n);
           }
-          n = new Point(p.x,p.y-1);
+          n = new Vector(p.x,p.y-1);
           if(this.isValidWalkingTile(n)) {
             result.push(n);
           }
           // Diagonals
-          n = new Point(p.x-1,p.y-1);
+          n = new Vector(p.x-1,p.y-1);
           if(this.isValidWalkingTile(n) && this.isValidDiagonal(n)) {
             result.push(n);
           }
-          n = new Point(p.x+1,p.y-1);
+          n = new Vector(p.x+1,p.y-1);
           if(this.isValidWalkingTile(n) && this.isValidDiagonal(n)) {
             result.push(n);
           }
-          n = new Point(p.x-1,p.y+1);
+          n = new Vector(p.x-1,p.y+1);
           if(this.isValidWalkingTile(n) && this.isValidDiagonal(n)) {
             result.push(n);
           }
-          n = new Point(p.x-1,p.y-1);
+          n = new Vector(p.x-1,p.y-1);
           if(this.isValidWalkingTile(n) && this.isValidDiagonal(n)) {
             result.push(n);
           }
         return result;
       }
       
-      private isValidWalkingTile(p: Point) {
+      private isValidWalkingTile(p: Vector) {
         return !this.cameFrom.get(p.x+p.y*this.levelWidth) && this.inBounds(p) 
         && this.level[p.x+p.y*this.levelWidth]===0;
       }
 
-      private isValidDiagonal(p : Point) {
+      private isValidDiagonal(p : Vector) {
         return this.level[p.x+1+p.y*this.levelWidth]===0 &&
           this.level[p.x-1+p.y*this.levelWidth]===0 &&
           this.level[p.x+(p.y+1)*this.levelWidth]===0 &&

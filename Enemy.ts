@@ -1,7 +1,7 @@
 class Enemy {
-    private pos : Point;
+    private pos : Vector;
 
-    constructor(pos : Point) {
+    constructor(pos : Vector) {
         this.pos = pos;
     }
 

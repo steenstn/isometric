@@ -1,8 +1,10 @@
 class Player {
     constructor() {
-        this.pos = new Point(100, 240);
-        this.goalPos = new Point(this.pos.x, this.pos.y);
-        this.oldPos = new Point(this.pos.x, this.pos.y);
+        this.pos = new Vector(100, 240);
+        this.goalPos = new Vector(this.pos.x, this.pos.y);
+        this.oldPos = new Vector(this.pos.x, this.pos.y);
+        this.velocity = new Vector(0, 0);
+        this.acceleration = new Vector(0, 0);
     }
     setGoalPos(goal) {
         this.goalPos = goal;
@@ -14,8 +16,32 @@ class Player {
         return Coordinates.getTileCoordinates(this.pos, Level.tileSize);
     }
     getPos() {
-        let tempPos = new Point(this.pos.x, this.pos.y);
+        let tempPos = new Vector(this.pos.x, this.pos.y);
         return tempPos;
+    }
+    clamp(input, min, max) {
+        return input > max ? max : input < min ? min : input;
+    }
+    move() {
+        this.oldPos = new Vector(this.pos.x, this.pos.y);
+        this.acceleration.x = this.clamp(this.acceleration.x, -1, 1);
+        this.acceleration.y = this.clamp(this.acceleration.y, -1, 1);
+        this.velocity.x += this.acceleration.x;
+        this.velocity.y += this.acceleration.y;
+        this.velocity.x = this.clamp(this.velocity.x, -2, 2);
+        this.velocity.y = this.clamp(this.velocity.y, -2, 2);
+        this.pos.x += this.velocity.x;
+        this.pos.y += this.velocity.y;
+        let levelPos = Coordinates.getTileCoordinates(this.pos, 32);
+        if (Level.currentLevel[levelPos.x + levelPos.y * Level.levelWidth] != 0) {
+            this.pos = this.oldPos;
+        }
+    }
+    setXVelocity(velocity) {
+        this.velocity.x = velocity;
+    }
+    setYVelocity(velocity) {
+        this.velocity.y = velocity;
     }
     moveTowardsGoal() {
         if (!this.path) {
@@ -29,7 +55,7 @@ class Player {
             this.path.pop();
             return;
         }
-        this.oldPos = new Point(this.pos.x, this.pos.y);
+        this.oldPos = new Vector(this.pos.x, this.pos.y);
         if (this.goalPos.x > this.pos.x) {
             this.pos.x++;
         }

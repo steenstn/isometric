@@ -34,7 +34,7 @@
 
 <script src="js/TinyQueue.js" type="text/javascript"></script>
 
-<script src="js/Point.js" type="text/javascript"></script>
+<script src="js/Vector.js" type="text/javascript"></script>
 <script src="js/Level.js" type="text/javascript"></script>
 <script src="js/WorldConstants.js" type="text/javascript"></script>
 <script src="js/Coordinates.js" type="text/javascript"></script>
@@ -61,7 +61,7 @@ var keysDown = {};
 var keyHeldDown = 0;
 var player = new Player();
 
-var enemy = new Enemy( new Point(300,250));
+var enemy = new Enemy( new Vector(300,250));
 Level.loadTileset();
 Level.generateLevel();
 
@@ -108,10 +108,11 @@ canvas.addEventListener('mousemove', function(evt){
 
 var frontier = [];
 var cameFrom = new Map();
-var goal = new Point(0,0);
+var goal = new Vector(0,0);
 var path = [];
 
 var pathFinder = new Pathfinder(Level.currentLevel, Level.levelWidth);
+
 
 var GameLoop = function(){
     if(Mouse.isDown) {
@@ -119,7 +120,7 @@ var GameLoop = function(){
     }
     clearBlack();
     checkKeys();
-    var mp = Coordinates.getTileCoordinates(Coordinates.to2d(new Point(-Viewport.isoPos().x+Mouse.x, -Viewport.isoPos().y+Mouse.y)), Level.tileSize);
+    var mp = Coordinates.getTileCoordinates(Coordinates.to2d(new Vector(-Viewport.isoPos().x+Mouse.x, -Viewport.isoPos().y+Mouse.y)), Level.tileSize);
     if(Mouse.click===1 && Coordinates.inWorldBounds(mp)) {
       
       path = pathFinder.findPath(player.getLevelCoordinates(), mp);
@@ -127,7 +128,8 @@ var GameLoop = function(){
       player.setPath(path);
       
     }
-    player.moveTowardsGoal();
+    player.move();
+    Viewport.moveTo(-player.getPos().x+320, -player.getPos().y);
     Level.render(ctx, player, mp);
     
     
@@ -137,7 +139,7 @@ var GameLoop = function(){
         if(value && cameFrom.get(value)) { 
         
           ctx.fillStyle = "rgba(155,155,255, 0.5)";
-        drawTile(new Point(cameFrom.get(value).x*Level.tileSize, cameFrom.get(value).y*Level.tileSize), Level.tileSize, Level.tileSize);
+        drawTile(new Vector(cameFrom.get(value).x*Level.tileSize, cameFrom.get(value).y*Level.tileSize), Level.tileSize, Level.tileSize);
       }
       }
     }
@@ -145,7 +147,7 @@ var GameLoop = function(){
     if(WorldConstants.debugOutput) {
         for(var i = 0; i < path.length;i++) {
           ctx.fillStyle = "rgba(100,255,100, 0.8)";
-          drawTile(new Point(path[i].x*Level.tileSize, path[i].y*Level.tileSize), Level.tileSize, Level.tileSize);
+          drawTile(new Vector(path[i].x*Level.tileSize, path[i].y*Level.tileSize), Level.tileSize, Level.tileSize);
       }
     }
     
@@ -162,11 +164,11 @@ var drawTile = function(p,width,height) {
   ctx.beginPath();
   var newP = Coordinates.toIso(p);
   ctx.moveTo(Math.round(Viewport.isoPos().x + newP.x),Math.round(Viewport.isoPos().y + newP.y));
-  var p2 = Coordinates.toIso(new Point(p.x+width, p.y));
+  var p2 = Coordinates.toIso(new Vector(p.x+width, p.y));
   ctx.lineTo(Math.round(Viewport.isoPos().x + p2.x),Math.round(Viewport.isoPos().y + p2.y));
-  var p3 = Coordinates.toIso(new Point(p.x+width, p.y+height));
+  var p3 = Coordinates.toIso(new Vector(p.x+width, p.y+height));
   ctx.lineTo(Math.round(Viewport.isoPos().x + p3.x), Math.round(Viewport.isoPos().y + p3.y));
-  var p4 = Coordinates.toIso(new Point(p.x, p.y+height));
+  var p4 = Coordinates.toIso(new Vector(p.x, p.y+height));
   ctx.lineTo(Math.round(Viewport.isoPos().x + p4.x), Math.round(Viewport.isoPos().y + p4.y));
   ctx.closePath();
   ctx.fill();
@@ -182,24 +184,28 @@ var checkKeys = function () {
   } else {
     keyHeldDown = 0;
   }
+  player.acceleration = new Vector(0,0);
+	player.velocity = new Vector(0,0);
 	if (38 in keysDown) { // Player holding up
-    Viewport.pos.y+=5;
-    Viewport.pos.x+=5;
+    player.acceleration.x+=-1;
+    player.acceleration.y+=-1;
 	}
 	else if (40 in keysDown) { // Player holding down
-    Viewport.pos.y-=5;
-    Viewport.pos.x-=5;
+    
+    player.acceleration.x+=1;
+    player.acceleration.y+=1;
     
 	}
 	if (37 in keysDown) { // Player holding left
-    Viewport.pos.x+=5;
-    Viewport.pos.y-=5;
+    player.acceleration.x+=-1;
+    player.acceleration.y+=1;
 	}
 	else if (39 in keysDown) { // Player holding right
-    Viewport.pos.x-=5;
-    Viewport.pos.y+=5;
-	}
-
+    player.acceleration.x+=1;
+    player.acceleration.y+=-1;
+    
+  }
+  
 }
 
 GameLoop();

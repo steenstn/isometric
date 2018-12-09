@@ -20,15 +20,15 @@ class Level {
         let ox = player.getPos().x + 0.1;
         let oy = player.getPos().y + 0.1;
         for (let j = 0; j < 150; j++) {
-            let levelPos = new Point(ox, oy);
+            let levelPos = new Vector(ox, oy);
             let tilePos = Coordinates.getTileCoordinates(levelPos, Level.tileSize);
             Level.visibleArray[Math.floor(tilePos.x) + Math.floor(tilePos.y) * Level.levelWidth] = 1;
             let delta = 0;
-            if (this.checkPos(new Point(ox, oy)) ||
-                this.checkPos(new Point(ox + delta, oy)) ||
-                this.checkPos(new Point(ox - delta, oy)) ||
-                this.checkPos(new Point(ox, oy + delta)) ||
-                this.checkPos(new Point(ox, oy - delta))) {
+            if (this.checkPos(new Vector(ox, oy)) ||
+                this.checkPos(new Vector(ox + delta, oy)) ||
+                this.checkPos(new Vector(ox - delta, oy)) ||
+                this.checkPos(new Vector(ox, oy + delta)) ||
+                this.checkPos(new Vector(ox, oy - delta))) {
                 return;
             }
             ox += x;
@@ -43,7 +43,7 @@ class Level {
             y = Math.sin(i * 0.0175);
             Level.doFov(player, x, y);
         }
-        let startPos = Coordinates.getTileCoordinates(new Point(-Viewport.pos.x, -Viewport.pos.y - 1.2 * Viewport.height), Level.tileSize);
+        let startPos = Coordinates.getTileCoordinates(new Vector(-Viewport.pos.x, -Viewport.pos.y - 1.2 * Viewport.height), Level.tileSize);
         let startx = startPos.x;
         let starty = startPos.y;
         if (startx < 0) {
@@ -52,7 +52,7 @@ class Level {
         if (starty < 0) {
             starty = 0;
         }
-        let endPos = Coordinates.getTileCoordinates(new Point(-Viewport.pos.x + 2 * Viewport.width, -Viewport.pos.y + 2 * Viewport.height), Level.tileSize);
+        let endPos = Coordinates.getTileCoordinates(new Vector(-Viewport.pos.x + 2 * Viewport.width, -Viewport.pos.y + 2 * Viewport.height), Level.tileSize);
         var endx = endPos.x;
         var endy = endPos.y;
         if (endx > Level.levelWidth)
@@ -61,16 +61,16 @@ class Level {
             endy = Level.levelWidth;
         for (var i = startx; i < endx; i++) {
             for (var j = starty; j < endy; j++) {
-                var p = new Point(i * Level.tileSize, j * Level.tileSize);
+                var p = new Vector(i * Level.tileSize, j * Level.tileSize);
                 var pIso = Coordinates.toIso(p);
                 context.drawImage(Level.tileset, Level.currentLevel[i + j * Level.levelWidth] * 64, 0, Level.tileSize * 2, Level.tileSize, Viewport.isoPos().x + pIso.x - Level.tileSize, Viewport.isoPos().y + pIso.y, Level.tileSize * 2, Level.tileSize);
                 if (mp.x === i && mp.y === j) {
                     context.fillStyle = "rgba(255,255,255, 0.5)";
-                    Level.drawTile(context, new Point(mp.x * Level.tileSize, mp.y * Level.tileSize), Level.tileSize, Level.tileSize);
+                    Level.drawTile(context, new Vector(mp.x * Level.tileSize, mp.y * Level.tileSize), Level.tileSize, Level.tileSize);
                 }
                 context.fillStyle = "rgba(200,255,200, 0.5)";
                 if (Level.visibleArray[i + j * Level.levelWidth] === 1) {
-                    Level.drawTile(context, new Point(i * Level.tileSize, j * Level.tileSize), Level.tileSize, Level.tileSize);
+                    Level.drawTile(context, new Vector(i * Level.tileSize, j * Level.tileSize), Level.tileSize, Level.tileSize);
                 }
                 if (Level.currentLevel[i + j * Level.levelWidth] === 1) {
                     context.drawImage(Level.buildings, 64, 0, Level.tileSize * 4, Level.tileSize * 4, Viewport.isoPos().x + pIso.x - Level.tileSize, Viewport.isoPos().y + pIso.y - Level.tileSize, Level.tileSize * 4, Level.tileSize * 4);
@@ -85,11 +85,11 @@ class Level {
         ctx.beginPath();
         var newP = Coordinates.toIso(p);
         ctx.moveTo(Math.round(Viewport.isoPos().x + newP.x), Math.round(Viewport.isoPos().y + newP.y));
-        var p2 = Coordinates.toIso(new Point(p.x + width, p.y));
+        var p2 = Coordinates.toIso(new Vector(p.x + width, p.y));
         ctx.lineTo(Math.round(Viewport.isoPos().x + p2.x), Math.round(Viewport.isoPos().y + p2.y));
-        var p3 = Coordinates.toIso(new Point(p.x + width, p.y + height));
+        var p3 = Coordinates.toIso(new Vector(p.x + width, p.y + height));
         ctx.lineTo(Math.round(Viewport.isoPos().x + p3.x), Math.round(Viewport.isoPos().y + p3.y));
-        var p4 = Coordinates.toIso(new Point(p.x, p.y + height));
+        var p4 = Coordinates.toIso(new Vector(p.x, p.y + height));
         ctx.lineTo(Math.round(Viewport.isoPos().x + p4.x), Math.round(Viewport.isoPos().y + p4.y));
         ctx.closePath();
         ctx.fill();

@@ -1,15 +1,20 @@
 class Viewport {
-    static pos = new Point(200,-30);
-    static oldPos = new Point(0,0);
+    static pos = new Vector(220,-220);
+    static oldPos = new Vector(0,0);
     static width = 640;
     static height = 300;
 
   constructor() {
-    Viewport.pos = new Point(0,0);
+    Viewport.pos = new Vector(0,0);
     Viewport.oldPos = Viewport.pos;
   }
 
-  static isoPos() : Point {
+  static moveTo(x: number, y: number) {
+    Viewport.oldPos = new Vector(Viewport.pos.x, Viewport.pos.y);
+    Viewport.pos.x = x;
+    Viewport.pos.y = y;
+  }
+  static isoPos() : Vector {
     return Coordinates.toIso(this.pos);
   }
 }

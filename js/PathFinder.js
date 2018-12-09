@@ -9,21 +9,21 @@ class Pathfinder {
         });
         this.cameFrom = new Map();
         this.costSoFar = new Map();
-        this.frontier.push({ point: start, priority: 0 });
+        this.frontier.push({ Vector: start, priority: 0 });
         this.cameFrom.set(start.x + start.y * this.levelWidth, null);
         this.costSoFar.set(start.x + start.y * this.levelWidth, 0);
         while (this.frontier.length > 0) {
-            let current = this.frontier.pop().point;
+            let current = this.frontier.pop().Vector;
             if (current.x === goal.x && current.y === goal.y) {
                 break;
             }
             let neighbours = this.getNeighbours(current);
             for (let i = 0; i < neighbours.length; i++) {
                 var newCost = this.costSoFar.get(current.x + current.y * this.levelWidth) ? this.costSoFar.get(current.x + current.y * this.levelWidth) + 1 : 1;
-                if (!this.hasPoint(neighbours[i]) || newCost < this.costSoFar[neighbours[i].x + neighbours[i].y * this.levelWidth]) {
+                if (!this.hasVector(neighbours[i]) || newCost < this.costSoFar[neighbours[i].x + neighbours[i].y * this.levelWidth]) {
                     this.costSoFar.set(neighbours[i].x + neighbours[i].y * this.levelWidth, newCost);
                     var prio = newCost + this.heuristic(goal, neighbours[i]);
-                    this.frontier.push({ point: neighbours[i], priority: prio });
+                    this.frontier.push({ Vector: neighbours[i], priority: prio });
                     this.cameFrom.set(neighbours[i].x + neighbours[i].y * this.levelWidth, current);
                 }
             }
@@ -36,7 +36,7 @@ class Pathfinder {
         }
         return path;
     }
-    hasPoint(p) {
+    hasVector(p) {
         for (var value of this.costSoFar.values()) {
             if (value && value.x === p.x && value.y === p.y) {
                 return true;
@@ -55,35 +55,35 @@ class Pathfinder {
             return [];
         }
         var result = [];
-        var n = new Point(p.x + 1, p.y);
+        var n = new Vector(p.x + 1, p.y);
         if (this.isValidWalkingTile(n)) {
             result.push(n);
         }
-        n = new Point(p.x - 1, p.y);
+        n = new Vector(p.x - 1, p.y);
         if (this.isValidWalkingTile(n)) {
             result.push(n);
         }
-        n = new Point(p.x, p.y + 1);
+        n = new Vector(p.x, p.y + 1);
         if (this.isValidWalkingTile(n)) {
             result.push(n);
         }
-        n = new Point(p.x, p.y - 1);
+        n = new Vector(p.x, p.y - 1);
         if (this.isValidWalkingTile(n)) {
             result.push(n);
         }
-        n = new Point(p.x - 1, p.y - 1);
+        n = new Vector(p.x - 1, p.y - 1);
         if (this.isValidWalkingTile(n) && this.isValidDiagonal(n)) {
             result.push(n);
         }
-        n = new Point(p.x + 1, p.y - 1);
+        n = new Vector(p.x + 1, p.y - 1);
         if (this.isValidWalkingTile(n) && this.isValidDiagonal(n)) {
             result.push(n);
         }
-        n = new Point(p.x - 1, p.y + 1);
+        n = new Vector(p.x - 1, p.y + 1);
         if (this.isValidWalkingTile(n) && this.isValidDiagonal(n)) {
             result.push(n);
         }
-        n = new Point(p.x - 1, p.y - 1);
+        n = new Vector(p.x - 1, p.y - 1);
         if (this.isValidWalkingTile(n) && this.isValidDiagonal(n)) {
             result.push(n);
         }

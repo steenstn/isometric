@@ -1,16 +1,20 @@
 class Player {
-    private pos : Point;
-    private goalPos : Point;
-    private oldPos : Point;
+    private pos : Vector;
+    private goalPos : Vector;
+    private oldPos : Vector;
     private path : any;
+    velocity : Vector;
+    acceleration : Vector;
 
     constructor() {
-        this.pos = new Point(100,240);
-        this.goalPos = new Point(this.pos.x, this.pos.y);
-        this.oldPos = new Point(this.pos.x, this.pos.y);
+        this.pos = new Vector(100,240);
+        this.goalPos = new Vector(this.pos.x, this.pos.y);
+        this.oldPos = new Vector(this.pos.x, this.pos.y);
+        this.velocity = new Vector(0,0);
+        this.acceleration = new Vector(0,0);
     }
 
-    setGoalPos(goal : Point) {
+    setGoalPos(goal : Vector) {
         this.goalPos = goal;
     }
 
@@ -18,13 +22,41 @@ class Player {
         this.path = path;
     }
 
-    getLevelCoordinates() : Point {
+    getLevelCoordinates() : Vector {
         return Coordinates.getTileCoordinates(this.pos, Level.tileSize);   
     }
     
-    getPos() : Point {
-        let tempPos = new Point(this.pos.x, this.pos.y);
+    getPos() : Vector {
+        let tempPos = new Vector(this.pos.x, this.pos.y);
         return tempPos;
+    }
+
+    clamp(input: number, min: number, max:number) {
+        return input > max ? max : input < min ? min : input;
+    }
+    move() {
+        this.oldPos = new Vector(this.pos.x, this.pos.y);
+        this.acceleration.x = this.clamp(this.acceleration.x,-1,1);
+        this.acceleration.y = this.clamp(this.acceleration.y,-1,1);
+        
+        this.velocity.x += this.acceleration.x;
+        this.velocity.y += this.acceleration.y;
+        this.velocity.x = this.clamp(this.velocity.x,-2,2);
+        this.velocity.y = this.clamp(this.velocity.y,-2,2);
+        this.pos.x += this.velocity.x;
+        this.pos.y += this.velocity.y;
+
+        let levelPos = Coordinates.getTileCoordinates(this.pos,32);
+        if(Level.currentLevel[levelPos.x + levelPos.y*Level.levelWidth]!=0) {
+            this.pos = this.oldPos;
+        }
+    }
+
+    setXVelocity(velocity : number) {
+        this.velocity.x = velocity; 
+    }
+    setYVelocity(velocity : number) {
+        this.velocity.y = velocity;
     }
 
     moveTowardsGoal() {
@@ -42,7 +74,7 @@ class Player {
             this.path.pop();
             return;
         }
-        this.oldPos = new Point(this.pos.x, this.pos.y);
+        this.oldPos = new Vector(this.pos.x, this.pos.y);
         
         if(this.goalPos.x > this.pos.x) {
             this.pos.x++;
