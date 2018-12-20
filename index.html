@@ -107,7 +107,6 @@ canvas.addEventListener('mousemove', function(evt){
 }, false);
 
 var frontier = [];
-var cameFrom = new Map();
 var goal = new Vector(0,0);
 var path = [];
 
@@ -122,34 +121,13 @@ var GameLoop = function(){
     checkKeys();
     var mp = Coordinates.getTileCoordinates(Coordinates.to2d(new Vector(-Viewport.isoPos().x+Mouse.x, -Viewport.isoPos().y+Mouse.y)), Level.tileSize);
     if(Mouse.click===1 && Coordinates.inWorldBounds(mp)) {
-      
       path = pathFinder.findPath(player.getLevelCoordinates(), mp);
-      cameFrom = pathFinder.cameFrom;
       player.setPath(path);
       
     }
     player.move();
     Viewport.moveTo(-player.getPos().x+320, -player.getPos().y);
     Level.render(ctx, player, mp);
-    
-    
-    
-    if(WorldConstants.debugOutput) {
-      for (var value of cameFrom.keys()) {
-        if(value && cameFrom.get(value)) { 
-        
-          ctx.fillStyle = "rgba(155,155,255, 0.5)";
-        drawTile(new Vector(cameFrom.get(value).x*Level.tileSize, cameFrom.get(value).y*Level.tileSize), Level.tileSize, Level.tileSize);
-      }
-      }
-    }
-
-    if(WorldConstants.debugOutput) {
-        for(var i = 0; i < path.length;i++) {
-          ctx.fillStyle = "rgba(100,255,100, 0.8)";
-          drawTile(new Vector(path[i].x*Level.tileSize, path[i].y*Level.tileSize), Level.tileSize, Level.tileSize);
-      }
-    }
     
     gLoop = setTimeout(GameLoop, 20);
     return;

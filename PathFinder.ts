@@ -2,7 +2,7 @@
 
 class Pathfinder {
     private frontier : any;
-    cameFrom : Map<any, any>;
+    private cameFrom : Map<any, any>;
     private costSoFar : Map<any, any>;
     private level : Array<any>;
     private levelWidth : number;
@@ -10,7 +10,6 @@ class Pathfinder {
     constructor(level : Array<any>, levelWidth : number) {
         this.level = level;
         this.levelWidth = levelWidth;
-        
     }
 
     findPath(start: Vector, goal: Vector) : Array<any>{
