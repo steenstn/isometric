@@ -74,7 +74,6 @@ addEventListener("keyup", function (e) {
 }, false);
 
 addEventListener('mousedown', function (e) {
-  
   Mouse.isDown=true;
 }, false);
 
@@ -83,26 +82,9 @@ addEventListener('mouseup', function (e) {
   Mouse.click = 0;
 }, false);
 
-function getMousePos(canvas, evt){
-    // get canvas position
-    var obj = canvas;
-    var top = 0;
-    var left = 0;
-    while (obj && obj.tagName != 'body') {
-        top += obj.offsetTop;
-        left += obj.offsetLeft;
-        obj = obj.offsetParent;
-    }
-
-    // return relative mouse position
-    Mouse.x = (evt.clientX - left + window.pageXOffset)/2 + 160;
-    Mouse.y = (evt.clientY - top + window.pageYOffset)/2;
-
-}
-
 var canvas = document.getElementById('c');
 canvas.addEventListener('mousemove', function(evt){
-        getMousePos(canvas, evt);
+        Mouse.getMousePos(canvas, evt, window);
 
 }, false);
 

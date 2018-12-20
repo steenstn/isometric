@@ -11,8 +11,8 @@ class Viewport {
 
   static moveTo(x: number, y: number) {
     Viewport.oldPos = new Vector(Viewport.pos.x, Viewport.pos.y);
-    Viewport.pos.x = x;
-    Viewport.pos.y = y;
+    Viewport.pos.x = Math.round(x);
+    Viewport.pos.y = Math.round(y);
   }
   static isoPos() : Vector {
     return Coordinates.toIso(this.pos);
