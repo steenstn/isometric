@@ -33,7 +33,7 @@
 <body>
 
 <script src="js/TinyQueue.js" type="text/javascript"></script>
-
+<script src="js/Keycode.js" type="text/javascript"></script>
 <script src="js/Vector.js" type="text/javascript"></script>
 <script src="js/Level.js" type="text/javascript"></script>
 <script src="js/WorldConstants.js" type="text/javascript"></script>
@@ -136,7 +136,7 @@ var drawTile = function(p,width,height) {
 
 var checkKeys = function () {
 //  console.log(keysDown);
-  if(79 in keysDown) {
+  if(Keycode.O in keysDown) {
     keyHeldDown++
     if(keyHeldDown === 1) {
       WorldConstants.debugOutput = !WorldConstants.debugOutput;
@@ -146,21 +146,21 @@ var checkKeys = function () {
   }
   player.acceleration = new Vector(0,0);
 	player.velocity = new Vector(0,0);
-	if (38 in keysDown) { // Player holding up
+	if (Keycode.W in keysDown) { // Player holding up
     player.acceleration.x+=-1;
     player.acceleration.y+=-1;
 	}
-	else if (40 in keysDown) { // Player holding down
+	else if (Keycode.S in keysDown) { // Player holding down
     
     player.acceleration.x+=1;
     player.acceleration.y+=1;
     
 	}
-	if (37 in keysDown) { // Player holding left
+	if (Keycode.A in keysDown) { // Player holding left
     player.acceleration.x+=-1;
     player.acceleration.y+=1;
 	}
-	else if (39 in keysDown) { // Player holding right
+	else if (Keycode.D in keysDown) { // Player holding right
     player.acceleration.x+=1;
     player.acceleration.y+=-1;
     
